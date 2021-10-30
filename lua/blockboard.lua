@@ -61,21 +61,10 @@ end
 
 local function redraw()
   vim.api.nvim_buf_set_option(buf, 'modifiable', true)
-  local items_count =  vim.api.nvim_win_get_height(win) - 1
-  local list = {}
-  local oldfiles = vim.api.nvim_get_vvar('oldfiles')
-
-  for i = #oldfiles, #oldfiles - items_count, -1 do
-    pcall(function()
-      local path = vim.api.nvim_call_function('fnamemodify', {oldfiles[i], ':.'})
-      table.insert(list, #list + 1, path)
-    end)
-  end
-
   local lines = {}
   local res = api.getData()
   for key, value in ipairs(res) do
-    table.insert(lines, string.format("%-10s%-15s%-10s", value.symbol, value.current_price, value.price_change_percentage_24h.."%"))
+    table.insert(lines, string.format("%-10s%-15s%-10s", "  "..value.symbol, value.current_price, value.price_change_percentage_24h.."%"))
   end
 
   vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
@@ -134,12 +123,12 @@ local function create_float_win()
   -- vim.api.nvim_command('bo 8new')
   local opts = {
     relative = 'editor',
-    width = 10, 
+    width = 36, 
     height = 8, 
     col = 2,
     row = vim.o.lines, 
-    anchor = 'NW',
-    border = "shadow",
+    anchor = 'SW',
+    style = "minimal"
     -- border = { "", "", "", "", "", "", "", "|" },
   }
   buf = vim.api.nvim_create_buf(false, true)
@@ -149,13 +138,14 @@ local function create_float_win()
 
   vim.api.nvim_buf_set_option(0, 'buftype', 'nofile')
   vim.api.nvim_buf_set_option(0, 'swapfile', false)
-  vim.api.nvim_buf_set_option(0, 'filetype', 'nvim-oldfile')
+  vim.api.nvim_buf_set_option(0, 'filetype', 'blockboard')
   vim.api.nvim_buf_set_option(0, 'bufhidden', 'wipe')
 
   vim.api.nvim_command('setlocal nowrap')
-  -- vim.api.nvim_command('setlocal cursorline')
+  vim.api.nvim_command('setlocal nonumber')
+  vim.api.nvim_command('setlocal norelativenumber')
 
-  vim.api.nvim_win_set_width(win, 40)
+  -- vim.api.nvim_win_set_width(win, 40)
 
   set_mappings()
 end
